@@ -50,6 +50,7 @@ public final class WelcomeListener implements Listener {
                     .getString("grant.group", "player")
                     .toLowerCase(Locale.ROOT);
             if (player.hasPermission("group." + group)) {
+                messages.sendList(player, "welcome.granted", Map.of("player", player.getName()));
                 return;
             }
 
