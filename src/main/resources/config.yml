@@ -25,7 +25,7 @@ welcome:
 
   # Ticks to wait after joining, so the greeting lands after the join and
   # MOTD noise instead of being scrolled away by it. 20 ticks is one second.
-  delay-ticks: 40
+  delay-ticks: 10
 
   lines:
     - "<gray>Welcome to <white><bold>Gizotopia</bold></white>, %player%.</gray>"
@@ -57,3 +57,26 @@ grant:
   granted: "<gray>%player% is now <green>%group%</green>.</gray>"
   promoted: "<gray>%sender% granted you the <green>%group%</green> role. Welcome in.</gray>"
   failed: "<gray>Could not grant %player%. An operator needs to check the server log.</gray>"
+
+ungrant:
+  # LuckPerms group a successful /ungrant sets the target to. Must match a group
+  # in playmc-litemc-config/plugins/LuckPerms/yaml-storage/groups/.
+  group: visitor
+
+  # Dispatched from the console, never as the sender, so whoever runs /ungrant
+  # needs litemc.ungrant and none of LuckPerms' own nodes.
+  # %uuid%, %player% and %group% are substituted.
+  command: "lp user %uuid% parent set %group%"
+
+  # LuckPerms applies the change asynchronously, so membership is re-checked
+  # this many ticks later and a warning is logged if it did not land.
+  # 0 disables the check. 20 ticks is one second.
+  verify-delay-ticks: 40
+
+  usage: "<gray>Usage: <white>/%label% playername</white> <dark_gray>-</dark_gray> <gray>demote an online visitor to Visitor.</gray>"
+  not-online: "<gray>%player% is not online. They have to be connected to be ungranted.</gray>"
+  already-granted: "<gray>%player% already has the <white>%group%</white> role.</gray>"
+  not-yourself: "<gray>You cannot ungrant yourself.</gray>"
+  granted: "<gray>%player% is now <white>%group%</white>.</gray>"
+  promoted: "<gray>%sender% demoted you to the <white>%group%</white> role.</gray>"
+  failed: "<gray>Could not ungrant %player%. An operator needs to check the server log.</gray>"

@@ -31,6 +31,9 @@ permissions:
   litemc.grant:
     description: Promote another player to the Player role.
     default: op
+  litemc.ungrant:
+    description: Remove the Player role from another player.
+    default: op
   litemc.grant.self:
     description: Bypass the guard that stops you promoting yourself.
     default: op
