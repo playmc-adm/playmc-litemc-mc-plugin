@@ -8,8 +8,8 @@ have no plugin worth pulling in for them. Code, not deployment.
 | `pom.xml` | build - paper-api only, nothing is shaded in |
 | `.github/workflows/release.yml` | builds a tagged version and attaches the jar to a release |
 | `src/main/resources/plugin.yml` | command and permission declarations |
-| `src/main/resources/config.yml` | rules text and `/grant` messages, editable without a rebuild |
-| `src/main/java/com/playmc/litemc/` | `LiteMcPlugin`, `Messages`, and the two commands |
+| `src/main/resources/config.yml` | rules, welcome and `/grant` text, editable without a rebuild |
+| `src/main/java/com/playmc/litemc/` | `LiteMcPlugin`, `Messages`, the two commands and the join listener |
 
 ## Why a plugin and not `commands.yml`
 
@@ -30,6 +30,17 @@ LuckPerms from the console instead of as the sender.
 | `/rules` | `litemc.rules` | everyone | Prints `rules.lines` from `config.yml`. |
 | `/grant <player>` | `litemc.grant` | op | Puts an online player in the `grant.group` LuckPerms group. |
 | | `litemc.grant.self` | op | Bypasses the guard against promoting yourself. |
+
+## The welcome message
+
+Players who join without the `grant.group` role are greeted after
+`welcome.delay-ticks` with `welcome.lines`, which point them at `/rules` and
+tell them to ask for `/grant`. Group membership decides who sees it, not
+whether they have played before, so it keeps appearing while it is still the
+right advice and stops by itself once someone grants them. Nothing is stored
+per player. Set `welcome.enabled: false` to turn it off.
+
+## Notes
 
 `/grant` still goes through LuckPerms - it dispatches `grant.command` from the
 console - so LuckPerms' own action log (`/lp log recent`) records every

@@ -2,6 +2,7 @@ package com.playmc.litemc;
 
 import com.playmc.litemc.command.GrantCommand;
 import com.playmc.litemc.command.RulesCommand;
+import com.playmc.litemc.listener.WelcomeListener;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -26,6 +27,8 @@ public final class LiteMcPlugin extends JavaPlugin {
 
         register("rules", new RulesCommand(messages), null);
         register("grant", grant, grant);
+
+        getServer().getPluginManager().registerEvents(new WelcomeListener(this, messages), this);
 
         getLogger().info("Enabled. /rules and /grant are registered.");
     }

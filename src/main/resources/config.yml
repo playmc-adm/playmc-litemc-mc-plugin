@@ -17,6 +17,21 @@ rules:
     - "<dark_gray> 2 </dark_gray><gray>Griefing is forbidden. Do not break, burn or take anything that is not yours.</gray>"
     - "<dark_gray> 3 </dark_gray><gray>You join as <white>Visitor</white>. Ask a friend who already has the <green>Player</green> role to run <green>/grant yourname</green> to promote you.</gray>"
 
+welcome:
+  # Sent on join to players who are still Visitors. Anyone already in the
+  # grant.group below never sees it, so it stops on its own once a newcomer
+  # has been granted - nothing is stored per player.
+  enabled: true
+
+  # Ticks to wait after joining, so the greeting lands after the join and
+  # MOTD noise instead of being scrolled away by it. 20 ticks is one second.
+  delay-ticks: 40
+
+  lines:
+    - "<gray>Welcome to <white><bold>Gizotopia</bold></white>, %player%.</gray>"
+    - "<gray>You are a <white>Visitor</white> for now: look around, but you cannot build yet.</gray>"
+    - "<gray>Read <green>/rules</green> first, then ask a player who has the <green>Player</green> role to run <green>/grant %player%</green> for you.</gray>"
+
 grant:
   # LuckPerms group a successful /grant puts the target in. Must match a group
   # in playmc-litemc-config/plugins/LuckPerms/yaml-storage/groups/.
