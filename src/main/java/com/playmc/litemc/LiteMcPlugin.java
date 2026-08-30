@@ -1,6 +1,7 @@
 package com.playmc.litemc;
 
 import com.playmc.litemc.command.GrantCommand;
+import com.playmc.litemc.command.UngrantCommand;
 import com.playmc.litemc.command.RulesCommand;
 import com.playmc.litemc.listener.WelcomeListener;
 import org.bukkit.command.CommandExecutor;
