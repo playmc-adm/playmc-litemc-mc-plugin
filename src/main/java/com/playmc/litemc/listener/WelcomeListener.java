@@ -47,14 +47,17 @@ public final class WelcomeListener implements Listener {
             }
 
             String group = plugin.getConfig()
-                    .getString("grant.group", "player")
+                    .getString("role.group", "player")
                     .toLowerCase(Locale.ROOT);
+            Map<String, String> placeholders = Map.of("player", player.getName());
+
             if (player.hasPermission("group." + group)) {
-                messages.sendList(player, "welcome.granted", Map.of("player", player.getName()));
+                // Optional: silent when welcome.granted is not configured.
+                messages.sendListIfPresent(player, "welcome.granted", placeholders);
                 return;
             }
 
-            messages.sendList(player, "welcome.lines", Map.of("player", player.getName()));
+            messages.sendList(player, "welcome.lines", placeholders);
         }, delay);
     }
 }

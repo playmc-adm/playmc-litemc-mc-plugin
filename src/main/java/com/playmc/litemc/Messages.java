@@ -46,6 +46,13 @@ public final class Messages {
         }
     }
 
+    /** Same, but silent when the key is absent: the list is optional. */
+    public void sendListIfPresent(CommandSender to, String path, Map<String, String> placeholders) {
+        for (String line : plugin.getConfig().getStringList(path)) {
+            to.sendMessage(render(line, placeholders));
+        }
+    }
+
     private Component render(String raw, Map<String, String> placeholders) {
         String text = raw;
         for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {

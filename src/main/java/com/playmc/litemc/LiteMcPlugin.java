@@ -1,7 +1,6 @@
 package com.playmc.litemc;
 
-import com.playmc.litemc.command.GrantCommand;
-import com.playmc.litemc.command.UngrantCommand;
+import com.playmc.litemc.command.RoleCommand;
 import com.playmc.litemc.command.RulesCommand;
 import com.playmc.litemc.listener.WelcomeListener;
 import org.bukkit.command.CommandExecutor;
@@ -24,8 +23,9 @@ public final class LiteMcPlugin extends JavaPlugin {
         saveDefaultConfig();
 
         Messages messages = new Messages(this);
-        GrantCommand grant = new GrantCommand(this, messages);
-        UngrantCommand ungrant = new UngrantCommand(this, messages);
+
+        RoleCommand grant = new RoleCommand(this, messages, RoleCommand.Action.GRANT);
+        RoleCommand ungrant = new RoleCommand(this, messages, RoleCommand.Action.UNGRANT);
 
         register("rules", new RulesCommand(messages), null);
         register("grant", grant, grant);

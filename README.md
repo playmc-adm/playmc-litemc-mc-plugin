@@ -9,7 +9,7 @@ have no plugin worth pulling in for them. Code, not deployment.
 | `.github/workflows/release.yml` | builds a tagged version and attaches the jar to a release |
 | `src/main/resources/plugin.yml` | command and permission declarations |
 | `src/main/resources/config.yml` | rules, welcome and `/grant` text, editable without a rebuild |
-| `src/main/java/com/playmc/litemc/` | `LiteMcPlugin`, `Messages`, the two commands and the join listener |
+| `src/main/java/com/playmc/litemc/` | `LiteMcPlugin`, `Messages`, `RulesCommand`, `RoleCommand` and the join listener |
 
 ## Why a plugin and not `commands.yml`
 
@@ -28,8 +28,9 @@ LuckPerms from the console instead of as the sender.
 | Command | Permission | Default | Behaviour |
 |---|---|---|---|
 | `/rules` | `litemc.rules` | everyone | Prints `rules.lines` from `config.yml`. |
-| `/grant <player>` | `litemc.grant` | op | Puts an online player in the `grant.group` LuckPerms group. |
-| | `litemc.grant.self` | op | Bypasses the guard against promoting yourself. |
+| `/grant <player>` | `litemc.grant` | op | Adds an online player to the `role.group` LuckPerms group. |
+| `/ungrant <player>` | `litemc.ungrant` | op | Removes it again. Admin-only: do not give this to `player`. |
+| | `litemc.grant.self` / `litemc.ungrant.self` | op | Bypass the guard against changing your own role. |
 
 ## The welcome message
 
@@ -41,6 +42,16 @@ right advice and stops by itself once someone grants them. Nothing is stored
 per player. Set `welcome.enabled: false` to turn it off.
 
 ## Notes
+
+`/grant` and `/ungrant` are one class, `RoleCommand`, parameterised by an
+`Action`. They differ in exactly one fact - whether the target should be in
+the group when it is over - and that fact drives the precondition, the
+verification and the tab-completion filter. Keeping it in one place is what
+stops those three from disagreeing.
+
+Note that Visitor is not a group. It is LuckPerms' `default`, which a player
+falls back to once `role.group` is removed, so `/ungrant` removes the Player
+parent rather than setting a Visitor one.
 
 `/grant` still goes through LuckPerms - it dispatches `grant.command` from the
 console - so LuckPerms' own action log (`/lp log recent`) records every

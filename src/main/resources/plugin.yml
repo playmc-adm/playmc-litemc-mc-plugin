@@ -42,3 +42,6 @@ permissions:
   litemc.grant.self:
     description: Bypass the guard that stops you promoting yourself.
     default: op
+  litemc.ungrant.self:
+    description: Bypass the guard that stops you demoting yourself.
+    default: op
