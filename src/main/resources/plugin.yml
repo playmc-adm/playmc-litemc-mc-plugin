@@ -1,0 +1,36 @@
+name: LiteMC
+version: '${project.version}'
+main: com.playmc.litemc.LiteMcPlugin
+api-version: '26.1'
+description: Server-specific commands for the PlayMC server.
+website: https://mc.gizotopia.online
+authors:
+  - PlayMC
+
+# Hard dependency: /grant is a LuckPerms call, and this also fixes load order
+# so the group nodes exist before anyone can run it.
+depend:
+  - LuckPerms
+
+commands:
+  rules:
+    description: Show the server rules.
+    usage: /rules
+    permission: litemc.rules
+    permission-message: Unknown command.
+  grant:
+    description: Promote an online visitor to the Player role.
+    usage: /grant <player>
+    permission: litemc.grant
+    permission-message: Unknown command.
+
+permissions:
+  litemc.rules:
+    description: Read the server rules. Everyone, visitors included.
+    default: true
+  litemc.grant:
+    description: Promote another player to the Player role.
+    default: op
+  litemc.grant.self:
+    description: Bypass the guard that stops you promoting yourself.
+    default: op

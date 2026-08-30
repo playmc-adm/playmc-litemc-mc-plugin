@@ -1,0 +1,118 @@
+---
+name: "Release: plugin"
+
+# Tag-driven: the tag is the version. Push v0.2.0 and the workflow builds
+# LiteMC-0.2.0.jar and attaches it to a release of the same name. The pom
+# carries a -SNAPSHOT default for local builds and is never edited for a
+# release; -Drevision overrides it here.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out the plugin
+        uses: actions/checkout@v4
+
+      - name: Read the version out of the tag
+        id: version
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#v}"
+
+          if ! printf '%s' "${version}" \
+              | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; then
+            echo "::error::${tag} is not vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-suffix"
+            exit 1
+          fi
+
+          {
+            echo "tag=${tag}"
+            echo "version=${version}"
+            echo "jar=LiteMC-${version}.jar"
+          } >> "${GITHUB_OUTPUT}"
+
+          # A suffix means a pre-release: v0.2.0-rc1 is not a stable build.
+          case "${version}" in
+            *-*) echo "prerelease=true" >> "${GITHUB_OUTPUT}" ;;
+            *) echo "prerelease=false" >> "${GITHUB_OUTPUT}" ;;
+          esac
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Build
+        run: mvn -B -Drevision=${{ steps.version.outputs.version }} package
+
+      - name: Inspect the jar
+        id: jar
+        run: |
+          jar="target/${{ steps.version.outputs.jar }}"
+          test -f "${jar}"
+
+          # plugin.yml is resource-filtered, so the tag must have reached it.
+          # Anything else means the server would report the wrong version.
+          if ! unzip -p "${jar}" plugin.yml \
+              | grep -Fqx "version: '${{ steps.version.outputs.version }}'"; then
+            echo "::error::plugin.yml in ${jar} does not carry the tag version"
+            unzip -p "${jar}" plugin.yml | head -5
+            exit 1
+          fi
+
+          {
+            echo "sha256=$(sha256sum "${jar}" | cut -d' ' -f1)"
+            echo "paper=$(mvn -q help:evaluate -Dexpression=paper.version -DforceStdout)"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Publish the release
+        run: |
+          jar="target/${{ steps.version.outputs.jar }}"
+          url="${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/${{ steps.version.outputs.jar }}"
+          notes="$(mktemp)"
+
+          cat > "${notes}" <<NOTES
+          Built from \`${{ steps.version.outputs.tag }}\` against paper-api \`${{ steps.jar.outputs.paper }}\`.
+
+          \`sha256: ${{ steps.jar.outputs.sha256 }}\`
+
+          Manifest entry for \`playmc-litemc-config/plugins.yml\`:
+
+          \`\`\`yaml
+            - id: litemc
+              name: LiteMC
+              enabled: true
+              version: "${{ steps.version.outputs.version }}"
+              file: ${{ steps.version.outputs.jar }}
+              url: ${url}
+              sha256: "${{ steps.jar.outputs.sha256 }}"
+              config:
+                - src: plugins/LiteMC/config.yml
+                  dest: LiteMC/config.yml
+          \`\`\`
+
+          Then run **Deploy: plugins** in playmc-litemc-provision.
+          NOTES
+
+          gh release create "${{ steps.version.outputs.tag }}" "${jar}" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --notes-file "${notes}" \
+            --prerelease="${{ steps.version.outputs.prerelease }}"
+
+          cat "${notes}" >> "${GITHUB_STEP_SUMMARY}"

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.playmc.litemc</groupId>
+  <artifactId>litemc</artifactId>
+  <!-- CI-friendly version: the release workflow passes -Drevision=<tag>. -->
+  <version>${revision}</version>
+  <packaging>jar</packaging>
+
+  <name>LiteMC</name>
+  <description>Server-specific commands for the PlayMC LiteMC server.</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Overridden by -Drevision on tagged builds; this is the local default. -->
+    <revision>0.1.0-SNAPSHOT</revision>
+    <!-- The itzg image runs java25 and paper-api is compiled for 25. -->
+    <maven.compiler.release>25</maven.compiler.release>
+    <!-- Keep in step with VERSION in playmc-litemc-deploy/minecraft.env. -->
+    <paper.version>26.1.2.build.74-stable</paper.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>papermc</id>
+      <url>https://repo.papermc.io/repository/maven-public/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- Provided by the server at runtime; never shaded into the jar. -->
+    <dependency>
+      <groupId>io.papermc.paper</groupId>
+      <artifactId>paper-api</artifactId>
+      <version>${paper.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!-- plugins.yml in playmc-litemc-config refers to this exact name. -->
+    <finalName>LiteMC-${project.version}</finalName>
+
+    <resources>
+      <!-- Only plugin.yml is filtered, so config.yml keeps its text verbatim. -->
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>plugin.yml</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>plugin.yml</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
+</project>
