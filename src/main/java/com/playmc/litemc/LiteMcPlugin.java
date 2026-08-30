@@ -24,13 +24,15 @@ public final class LiteMcPlugin extends JavaPlugin {
 
         Messages messages = new Messages(this);
         GrantCommand grant = new GrantCommand(this, messages);
+        UngrantCommand ungrant = new UngrantCommand(this, messages);
 
         register("rules", new RulesCommand(messages), null);
         register("grant", grant, grant);
+        register("ungrant", ungrant, ungrant);
 
         getServer().getPluginManager().registerEvents(new WelcomeListener(this, messages), this);
 
-        getLogger().info("Enabled. /rules and /grant are registered.");
+        getLogger().info("Enabled LiteMC.");
     }
 
     private void register(String name, CommandExecutor executor, TabCompleter completer) {

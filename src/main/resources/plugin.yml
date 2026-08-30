@@ -23,6 +23,11 @@ commands:
     usage: /grant <player>
     permission: litemc.grant
     permission-message: Unknown command.
+  ungrant:
+    description: Demote an online player to the Visitor role.
+    usage: /ungrant <player>
+    permission: litemc.ungrant
+    permission-message: Unknown command.
 
 permissions:
   litemc.rules:
