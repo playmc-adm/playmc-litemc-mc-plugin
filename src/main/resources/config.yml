@@ -31,6 +31,9 @@ welcome:
     - "<gray>Welcome to <white><bold>Gizotopia</bold></white>, %player%.</gray>"
     - "<gray>You are a <white>Visitor</white> for now: look around, but you cannot build yet.</gray>"
     - "<gray>Read <green>/rules</green> first, then ask a player who has the <green>Player</green> role to run <green>/grant %player%</green> for you.</gray>"
+  
+  granted:
+    - "<gray>Welcome back, <green>%player%</green>.</gray>"
 
 grant:
   # LuckPerms group a successful /grant puts the target in. Must match a group
